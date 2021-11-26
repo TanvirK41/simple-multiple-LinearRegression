@@ -1,0 +1,109 @@
+---
+title: "Simple Linear Regression"
+output: pdf_document
+---
+
+```{r}
+library(tidyverse)
+library(faraway) # diabetes data
+library(broom)
+```
+## SLR Example
+
+**Is there a linear relationship between cholesterol and age?**
+
+```{r}
+# load data diabetes
+data(diabetes)
+
+# age vs cholesterol
+plot(diabetes$age, diabetes$chol)
+
+# fit Simple Linear Regression 
+# chol <- outcome
+# age <- predictor 
+reg_diab = lm(chol ~ age, data = diabetes)
+
+# results using summary()
+summary(reg_diab)
+
+```
+How would we interpret the intercept: (intercept is the average value of our outcome given, when X is 0). 
+
+In this case: Our outcome will be equal 0 our intercept when our X is 0. If X is 0 (our predictor is 0), the slope, whatever the slope * 0 is 0. *The average value for the outcome will equal to the intercept when x is 0.* In this example, it does not make sense because our age is 0. 
+
+Not always intercept has meaningful information. 
+
+
+Using this model to make an interpretation about a person who age is 10-15 might not be a good idea, this is called *Extrapolation*. 
+
+
+
+
+
+```{r}
+# results using broom::tidy()
+tidy(reg_diab)
+```
+*Each one year increase in age is associated with 0.63 milligram per deciliter increase in cholesterol. To be more accurate, each one year increase in age is associated with an average 0.63 milligram per deciliter increase in cholesterol level. If 0.63 was negative, then it will be a decrease in cholesterol level*
+
+
+
+
+
+```{r}
+# fit statistics using broom::glance()
+glance(reg_diab)
+```
+
+
+
+
+
+```{r}
+# extract fitted.values
+fitted = reg_diab$fitted.values
+```
+It takes the X predictor for each observation, plugs into the model based on the intercept and coefficient and calculates the fitted value 
+
+
+
+
+
+```{r}
+# plot with regression line (may need to run the lines together)
+plot(diabetes$age, diabetes$chol)
+abline(reg_diab, lwd = 2, col = 2)
+```
+
+
+
+
+
+
+
+
+
+
+
+## Calculating Coefficient Estimates by Hand
+
+```{r}
+set.seed(1)
+# generate data
+data = data.frame(x = rnorm(30, 3, 3)) %>% 
+  mutate(y = 2+.6*x + rnorm(30, 0, 1))
+
+# fit model
+linmod = lm(y ~ x, data = data)
+summary(linmod)
+
+# calculate estimates using OLS
+beta1 = with(data, sum((x - mean(x))*(y - mean(y))) / sum((x - mean(x))^2))
+beta0 = with(data, mean(y) - beta1*mean(x))
+
+c(beta0, beta1)
+
+```
+
+
