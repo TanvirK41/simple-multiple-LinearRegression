@@ -15,7 +15,7 @@ Is there a linear relationship between length of stay and number of beds?
 
 ```{r}
 # load data
-data_hosp = read_csv("./R - Module 17/Hospital.csv")
+data_hosp = read_csv("./Hospital.csv")
 
 # plot relationship
 data_hosp %>% ggplot() + 
@@ -49,12 +49,17 @@ data_hosp %>%
 
 # CIs for both slope and intercept
 confint(reg_hos)
+
+# different confidence interval 
 confint(reg_hos,level = 0.90)
 
 # find 95% CI for 100 beds difference
 res = tidy(reg_hos) %>% filter(term == "BEDS")
 estimate = res$estimate
 std.error = res$std.error
+
+
+# critical value 
 cv = qt(0.975, df = 113 - 2)
 
 lower = 100*estimate - 100*std.error*cv
@@ -64,7 +69,10 @@ c(lower, upper)
 
 ```
 
-## Prediction Intervals
+
+
+
+**Prediction Intervals**
 
 ```{r}
 # 95% confidence interval using predict()
